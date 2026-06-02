@@ -31,7 +31,6 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `mydb`.`Status` (
   `StatusID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `Bezeichner` VARCHAR(45) NOT NULL,
-  `Zeitstempel` DATETIME NOT NULL,
   PRIMARY KEY (`StatusID`))
 ENGINE = InnoDB;
 
@@ -169,24 +168,23 @@ SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
-
-insert into Status
+insert ignore into Status
 (StatusID, Bezeichner)
 Values(1, "Bestellung empfangen");
 
-insert into Status
+insert ignore into Status
 (StatusID, Bezeichner)
 Values(2, "Bestellung in Zubereitung");
 
-insert into Status
+insert ignore into Status
 (StatusID, Bezeichner)
 Values(3, "Bestellung zubereitet");
 
-insert into Status
+insert ignore into Status
 (StatusID, Bezeichner)
 Values(4, "Bestellung serviert");
 
-insert into Status
+insert ignore into Status
 (StatusID, Bezeichner)
 Values(5, "Bestellung bezahlt");
 
