@@ -18,7 +18,7 @@ USE `mydb` ;
 -- Table `mydb`.`Kunden`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`Kunden` (
-  `KundenID` INT NOT NULL,
+  `KundenID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `Nachname` VARCHAR(45) NOT NULL,
   `Vorname` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`KundenID`))
@@ -29,9 +29,9 @@ ENGINE = InnoDB;
 -- Table `mydb`.`Status`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`Status` (
-  `StatusID` INT NOT NULL AUTO_INCREMENT,
+  `StatusID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `Bezeichner` VARCHAR(45) NOT NULL,
-  `Zeitstempel` VARCHAR(45) NOT NULL,
+  `Zeitstempel` DATETIME NOT NULL,
   PRIMARY KEY (`StatusID`))
 ENGINE = InnoDB;
 
@@ -41,10 +41,21 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`Abrechnung` (
   `AbrechnungID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `Betrag` DECIMAL UNSIGNED NOT NULL,
-  `Trinkgeld` DECIMAL UNSIGNED NULL,
+  `Betrag` DECIMAL(10,2) UNSIGNED NOT NULL,
+  `Trinkgeld` DECIMAL(10,2) UNSIGNED NULL,
   `Zeitstempel` DATETIME NOT NULL,
   PRIMARY KEY (`AbrechnungID`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Kellner`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Kellner` (
+  `KellnerID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `Name` VARCHAR(45) NOT NULL,
+  `Vorname` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`KellnerID`))
 ENGINE = InnoDB;
 
 
@@ -58,10 +69,12 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Bestellung` (
   `Status_idStaus` INT UNSIGNED NOT NULL,
   `Kunden_KundenID` INT UNSIGNED NOT NULL,
   `Abrechnung_AbrechnungID` INT UNSIGNED NOT NULL,
+  `Kellner_KellnerID` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`BestellungID`),
   INDEX `Status_idStatus_idx` (`Status_idStaus` ASC) VISIBLE,
   INDEX `fk_Bestellung_Kunden1_idx` (`Kunden_KundenID` ASC) VISIBLE,
   INDEX `fk_Bestellung_Abrechnung1_idx` (`Abrechnung_AbrechnungID` ASC) VISIBLE,
+  INDEX `fk_Bestellung_Kellner1_idx` (`Kellner_KellnerID` ASC) VISIBLE,
   CONSTRAINT `Status_idStatus`
     FOREIGN KEY (`Status_idStaus`)
     REFERENCES `mydb`.`Status` (`StatusID`)
@@ -75,6 +88,11 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Bestellung` (
   CONSTRAINT `fk_Bestellung_Abrechnung1`
     FOREIGN KEY (`Abrechnung_AbrechnungID`)
     REFERENCES `mydb`.`Abrechnung` (`AbrechnungID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Bestellung_Kellner1`
+    FOREIGN KEY (`Kellner_KellnerID`)
+    REFERENCES `mydb`.`Kellner` (`KellnerID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -92,37 +110,12 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`Kellner`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`Kellner` (
-  `KellnerID` INT NOT NULL,
-  `Name` VARCHAR(45) NOT NULL,
-  `Bestellung_idBestellung` INT NOT NULL,
-  `Kunden_idKunden` INT NOT NULL,
-  `Vorname` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`KellnerID`),
-  INDEX `Bestellung_idBestellung_idx` (`Bestellung_idBestellung` ASC) VISIBLE,
-  INDEX `Kunden_idKunden_idx` (`Kunden_idKunden` ASC) VISIBLE,
-  CONSTRAINT `Bestellung_idBestellung`
-    FOREIGN KEY (`Bestellung_idBestellung`)
-    REFERENCES `mydb`.`Bestellung` (`BestellungID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `Kunden_idKunden`
-    FOREIGN KEY (`Kunden_idKunden`)
-    REFERENCES `mydb`.`Kunden` (`KundenID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `mydb`.`Gericht`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`Gericht` (
   `GerichtID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `Name` VARCHAR(45) NULL,
-  `Preis` DECIMAL NULL,
+  `Name` VARCHAR(45) NOT NULL,
+  `Preis` DECIMAL(10,2) UNSIGNED NOT NULL,
   PRIMARY KEY (`GerichtID`))
 ENGINE = InnoDB;
 
@@ -175,3 +168,26 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
+insert into Status
+(StatusID, Bezeichner)
+Values(1, "Bestellung empfangen");
+
+insert into Status
+(StatusID, Bezeichner)
+Values(2, "Bestellung in Zubereitung");
+
+insert into Status
+(StatusID, Bezeichner)
+Values(3, "Bestellung zubereitet");
+
+insert into Status
+(StatusID, Bezeichner)
+Values(4, "Bestellung serviert");
+
+insert into Status
+(StatusID, Bezeichner)
+Values(5, "Bestellung bezahlt");
+
+
